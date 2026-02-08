@@ -18,7 +18,7 @@ const createShipment = async (shippingDetails) => {
     const payload = {
         order_id: `SR_${shippingDetails.order_id}`,
         order_date: new Date().toISOString().slice(0, 16).replace('T', ' '), // Format: YYYY-MM-DD HH:MM
-        pickup_location: shippingDetails.pickup_location || 'Primary',
+        pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION || 'Primary',
 
         billing_customer_name: shippingDetails.name,
         billing_last_name: '',
