@@ -14,7 +14,6 @@ module.exports = async (req, res) => {
     }
 
     // CORS (you can restrict later)
-    //res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -75,11 +74,18 @@ module.exports = async (req, res) => {
                     phone: shipping_details.phone,
                     email: shipping_details.email,
                     address: shipping_details.address,
+                    address_2: shipping_details.address_2, // Added
                     city: shipping_details.city,
                     state: shipping_details.state,
                     pincode: shipping_details.pincode,
+                    country: shipping_details.country, // Added
                     items: shipping_details.items,
-                    total: shipping_details.total
+                    // Pass through these fields to create-shipment
+                    verified_total: shipping_details.verified_total || shipping_details.total,
+                    length: shipping_details.length,
+                    breadth: shipping_details.breadth,
+                    height: shipping_details.height,
+                    weight: shipping_details.weight
                 };
 
                 shipment = await createShipment(safeShippingDetails);

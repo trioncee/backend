@@ -17,16 +17,17 @@ const createShipment = async (shippingDetails) => {
 
     const payload = {
         order_id: `SR_${shippingDetails.order_id}`,
-        order_date: new Date().toISOString().split('T')[0],
-        pickup_location: 'Primary',
+        order_date: new Date().toISOString().slice(0, 16).replace('T', ' '), // Format: YYYY-MM-DD HH:MM
+        pickup_location: shippingDetails.pickup_location || 'Primary',
 
         billing_customer_name: shippingDetails.name,
         billing_last_name: '',
         billing_address: shippingDetails.address,
+        billing_address_2: shippingDetails.address_2 || '',
         billing_city: shippingDetails.city || '',
         billing_pincode: shippingDetails.pincode,
         billing_state: shippingDetails.state || '',
-        billing_country: 'India',
+        billing_country: shippingDetails.country || 'India',
         billing_email: shippingDetails.email || 'no-reply@trioncee.com',
         billing_phone: shippingDetails.phone,
 
@@ -35,8 +36,11 @@ const createShipment = async (shippingDetails) => {
         order_items: shippingDetails.items.map(item => ({
             name: item.name,
             sku: item.sku || 'default-sku',
-            units: item.quantity,
-            selling_price: item.verified_price // backend-calculated
+            units: parseInt(item.quantity || item.units || 1),
+            selling_price: parseFloat(item.verified_price || item.selling_price || item.price || 0),
+            discount: '',
+            tax: '',
+            hsn: item.hsn || ''
         })),
 
         payment_method: 'Prepaid',
@@ -45,12 +49,12 @@ const createShipment = async (shippingDetails) => {
         transaction_charges: 0,
         total_discount: 0,
 
-        sub_total: shippingDetails.verified_total, // backend-calculated
+        sub_total: parseFloat(shippingDetails.verified_total || 0),
 
-        length: 10,
-        breadth: 10,
-        height: 10,
-        weight: 0.5
+        length: parseFloat(shippingDetails.length || 10),
+        breadth: parseFloat(shippingDetails.breadth || 10),
+        height: parseFloat(shippingDetails.height || 10),
+        weight: parseFloat(shippingDetails.weight || 0.5)
     };
 
     try {
